@@ -2,39 +2,49 @@
 
 ![Image of Linux Input Event](http://www.embeddedlinux.org.cn/essentiallinuxdevicedrivers/final/images/YTNyaWQ3ODBzOS9jL2VnbXRwNjQ5NWEzMi9yZzE1ZmkwcGdmaS4wLzFoaWc3c2M-.jpg)
 
-## Background
-### Architecture
- Input subsystem a collection of drivers that is degigned to support all the devices under Linux.
+##Input Core
+ Input subsystem a collection of drivers that is designed to support all the devices under Linux.
  Most of device drivers reside in drivers/input, although quite a few line in drivers/hid and drivers/platform
 
-#### Device drivers
+## Device drivers
  Theses modules talk to the hardware, and provides events to the input module
 
-#### Event Handlers
+## Event Handlers
  These modules get event from input core and pass them where needed via various interface.
 ```
 Driver → InputCore → Event Handler → User Space (user application)
 
 ```
 
-##### udev
+### udev
 
 udev(userspace /dev) is a device manager for the Linux kernel. As the successor of devfsd and hotplug, udev primarily manages device nodes in the /dev/ directory. At the same time, udev also handles all user space events raised when hardware devices are added into the system or removed from it, including firmware loading as required by certain devices.
 
-##### evdev
+### evdev
 
-Generic input event interface in the Linux kernel. It generalizes raw input events from devices drivers and makes them available through chracter devices in the /dev/input/ directory. user-space library for the Linux kernel component evdev is called libevdev. Libevdev abstracts the evdev ioctls through type-safe interfaces and provides functions to change the appearance of the device.  Libevdev shares similarites with the read system call
+Generic input event interface in the Linux kernel. It generalizes raw input events from devices drivers and makes them available through character devices in the /dev/input/ directory. user-space library for the Linux kernel component evdev is called libevdev. Libevdev abstracts the evdev ioctls through type-safe interfaces and provides functions to change the appearance of the device.  Libevdev shares similarities with the read system call
 
 For Weston/Wayland, the stack would look like this:
 ```
 Linux kernel → libevdev → libinput → Weston → Wayland client
 ```
 
+### mknod
+mknod is the command used to create device files, which can act strangely compared to normal files. Device files are kept in /dev, and unlike normal files, these are files the kernel knows about, and reads/writes to.
 
-#### Device file
+mknod follows the syntax
+```
+mknod device-name device-type major-number minor-number
+```
+for example, the following creates the character device /dev/random and has it point to major number 1, minor number 8.
+```
+mknod /dev/random c 1 8
+```
+
+## Device file
  In Unix-like operating systems, a device file or special file is an interface to a device driver that appears in a file system as if it were an ordinary file. There special files allow an application program to interact with a device by using its device driver via standard input/output system calls
 
-##### Character devices
+### Character devices
 
 Character special files or character devices provide unbuffered, direct access to the hardware device. They do not necessarily allow programs to read or write single characters at a time; that is up to the device in question. The character device for a hard disk, for example, will normally require that all reads and writes are aligned to block boundaries and most certainly will not allow reading a single byte.
 
@@ -50,5 +60,5 @@ struct input_event {
         unsigned int value;
 };
 ```
-_ _ _
+
 ## Code
